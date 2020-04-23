@@ -1,11 +1,13 @@
 const express=require('express');
-const burger= require('../models/burger.js');
 const router = express.Router();
 
+//Importing the database funcions for bugers
+const burger= require('../models/burger.js');
 
-router.get("/", function(req, res) {
+//create routes and logic for routes
+router.get("/", (req, res)=> {
   console.log("donezo")
-  burger.all(function(data) {
+  burger.selectAll(function(data) {
     var hbsObject = {
       burgers: data
     };
@@ -14,33 +16,29 @@ router.get("/", function(req, res) {
     res.render("index", hbsObject);
   });
 });
-
+//add a new buger
 router.post('/api/burgers', (req,res)=>{
-  burger.create(["burger_name", "devoured"],[req.body.burger_name, req.body.devoured],(result)=>{
-    res.json({ id: result.insertId})//sends back the id of the new burger
+  burger.insertOne(["burger_name"
+],[
+  req.body.burger_name
+], function(result){
+  //send back a new buger 
+    res.json({ id: result.insertId});
     });
 });
 router.put('/api/burgers/:id', (req,res)=>{
-  var condition = "id = " +req.params.id;
+  var condition = "id = " + req.params.id;
     console.log("condition", condition);
-      burger.update({devoured: req.params.devoured}, condition, (res)=>{
+
+      burger.updateOne({devoured: req.body.devoured}, condition, (result)=>{
         if (result, changedRows === 0){
-          return res.status(404).end()
+
+          return res.status(404).end();
         } else{
-          return res.status(200).end
+          return res.status(200).end();
         }
       });
 });
 
-router.delete('/api/burgers/:id', (req,res)=>{
-  var condition = "id = " + req.params.id;
-    console.log('condition', condition);
-      burger.delete(condition, (result)=>{
-        if(result.affectedRows==0){
-          return res.status(404).end
-        }else{
-          return res.status(200).end
-        }
-      })
-})
+
 module.exports = router;
