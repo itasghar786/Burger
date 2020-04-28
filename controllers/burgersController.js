@@ -7,7 +7,7 @@ const burger= require('../models/burger.js');
 //create routes and logic for routes
 router.get("/", (req, res)=> {
   console.log("donezo")
-  burger.selectAll(function(data) {
+  burger.all(function(data) {
     var hbsObject = {
       burgers: data
     };
